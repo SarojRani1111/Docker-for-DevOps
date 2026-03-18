@@ -1,21 +1,6 @@
-Realtime Chat App with Docker Volumes
+Project: Realtime Chat App with Docker Volumes
 
 This is a Node.js real-time chat app running in Docker with all 5 volume types demonstrated: anonymous, named, bind mount, tmpfs, and DB persistent volume.
-
-Project Structure:
-
-realtime-chat-app/
-├── backend/
-│   ├── Dockerfile
-│   ├── app.js
-│   ├── package.json
-│   └── index.html
-├── data/
-│   └── persistent/      # Host folder for bind mount
-├── tmp/
-├── docker-compose.yml
-└── README.md
-
 
 Prerequisites
 
@@ -39,7 +24,7 @@ Stores non-critical temporary files in> anonymous volume.
 Stores persistent attachments in> named volume.
 
 
-Setup by Step  Instructions which I followed to complete this task:
+Step by Step  Instructions which I followed to complete this task:
 
 Step 1: Updateed Ubuntu and Installed Docker
 
@@ -83,44 +68,7 @@ Note: express is the web server, socket.io is for real-time chat.
 Step 5: Created Backend Files
 vim app.js
 
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const fs = require('fs');
-
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
-const port = process.env.APP_PORT || 3000;
-
-const anonDir = '/data/anon';
-const tmpfsDir = '/data/tmp';
-const bindDir = '/data/bind';
-const namedDir = '/data/named';
-
-[anonDir, tmpfsDir, bindDir, namedDir].forEach(dir => {
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-});
-
-fs.writeFileSync(`${anonDir}/anon.log`, 'Anonymous volume log\n', { flag: 'a' });
-fs.writeFileSync(`${tmpfsDir}/tmp.log`, 'Tmpfs volume log\n', { flag: 'a' });
-fs.writeFileSync(`${bindDir}/bind.log`, 'Bind mount log\n', { flag: 'a' });
-fs.writeFileSync(`${namedDir}/named.log`, 'Named volume log\n', { flag: 'a' });
-
-app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
-
-io.on('connection', (socket) => {
-    console.log('User connected');
-    socket.on('chat message', (msg) => {
-        fs.appendFileSync(`${tmpfsDir}/messages.log`, msg + '\n');
-        io.emit('chat message', msg);
-    });
-    socket.on('disconnect', () => console.log('User disconnected'));
-});
-
-server.listen(port, () => console.log(`Chat app running on port ${port}`));
-
-
+![app.js](day3_images/app.js_1.4.png)
 
 index.html:
 ![index.html](day3_images/index.html_1.5.png)
